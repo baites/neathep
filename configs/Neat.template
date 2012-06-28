@@ -1,0 +1,52 @@
+# Neat.template
+#
+# Developers:
+#   Victor Eduardo Bazterra 2010 (UIC)
+#   Phillip Eller 2010 (ETH) 
+#   Christfried Focke 2010 (ETH) 
+#
+# Descrition:
+#   Template file to configure neat for training multiple parameter sets.
+
+[phenotype]
+
+input_nodes = $input_nodes
+output_nodes = $output_nodes
+max_weight = $max_weight
+min_weight = $min_weight
+feedforward = $feedforward
+nn_activation = $nn_activation
+hidden_nodes = $hidden_nodes
+weight_stdev = $weight_stdev
+
+[genetic]
+
+pop_size = $pop_size
+max_fitness_threshold = $max_fitness_threshold
+prob_addconn = $prob_addconn
+prob_addnode = $prob_addnode
+prob_mutatebias = $prob_mutatebias
+bias_mutation_power = $bias_mutation_power
+prob_mutate_weight = $prob_mutate_weight
+weight_mutation_power = $weight_mutation_power
+prob_togglelink = $prob_togglelink
+elitism = $elitism
+
+[genotype compatibility]
+
+compatibility_threshold = $compatibility_threshold
+compatibility_change = $compatibility_change
+excess_coeficient = $excess_coeficient
+disjoint_coeficient = $disjoint_coeficient
+weight_coeficient = $weight_coeficient
+
+[species]
+
+species_size = $species_size
+survival_threshold = $survival_threshold
+old_threshold = $old_threshold
+youth_threshold = $youth_threshold
+old_penalty = $old_penalty
+youth_boost = $youth_boost
+max_stagnation = $max_stagnation
+
