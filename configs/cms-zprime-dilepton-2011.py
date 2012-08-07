@@ -11,17 +11,12 @@ from Util import *
 
 # Channel configuration
 
-#RecoVersions = 'p20'
-#Leptons = ['CC','MU']
-#Ntags = ['EqOneTag','EqTwoTag']
-#Njets = ['EqTwoJet','EqThreeJet','EqFourJet']
-
-RecoVersions = 'p20'
-Leptons = ['MU']
+RecoVersions = 'Run2011'
+Leptons = ['EMU']
 Ntags = ['EqOneTag']
 Njets = ['EqTwoJet']
 
-Luminosity = {'p20':'8.7'}
+Luminosity = {'Run2011':'5.0'}
 
 # Topovar back list
 TopovarBlackList = [
@@ -42,7 +37,6 @@ TopovarBlackList = [
   # Misc.
   'Lumi','KS','Hits','Track','Error',
 ]
-
 
 # Combined channel histograms
 
