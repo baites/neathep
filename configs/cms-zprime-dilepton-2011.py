@@ -20,7 +20,11 @@ Luminosity = {'Run2011':'5.0'}
 
 TopovarBlackList = [
   # Related to cmssw and event weight
-  'edm', 'reco', 'pat', 'Gen'
+  'edm', 'reco', 'pat', 'Gen', 'Pileup',
+  # Counting variables
+  'NPV', 'Nmuons', 'Nelectrons', 'Njets', 'Nbtags',
+  # Event weight
+  'eventWeight'
 ]
 
 # Combined channel histograms
@@ -49,9 +53,10 @@ Systematics = []
 
 # Input variables and topovar files
 
+Inputtree = 'Events'
 Inputvars = 'inputvars.txt'
 Selectvars = 'selectedvars.txt'
-SampleLocation = '/Users/baites/Projects/neathep/CMSZprimeDilepton2011'
+SampleLocation = '/uscms/home/baites/nobackup/neathep/test'
 TrainingSample = 'training'
 TestingSample = ''
 YieldSample = 'yield'

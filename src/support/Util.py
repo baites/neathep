@@ -29,24 +29,16 @@ class UtilError(Exception):
 def channelName(set, sample=''):
   name = ''
 
-  if 'reco' in set:
-    name = set['reco']
+  if 'runs' in set:
+    name = set['runs']
   
-  if 'lepton' in set:
-    if name == '': name = set['lepton']
-    else: name = name + '_%s' % set['lepton']
+  if 'channels' in set:
+    if name == '': name = set['channels']
+    else: name = name + '_%s' % set['channels']
 
   if sample != '':
     if name == '': name = sample
-    else: name = name + '_%s' % sample    
-
-  if 'ntag' in set:
-    if name == '': name = set['ntag']
-    else: name = name + '_%s' % set['ntag']
-
-  if 'njet' in set:
-    if name == '': name = set['njet']
-    else: name = name + '_%s' % set['njet']
+    else: name = name + '_%s' % sample  
 
   return name
 

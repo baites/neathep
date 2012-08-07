@@ -39,8 +39,8 @@ class TopovarLists(Processor):
     self.message('Processing channel %s' % channel)
 
     # Creating output directory
-    outdir = '%s/scratch/%s' % (
-      Common.NeatDirectory, self.getParameter('output')
+    outdir = '%s/scratch/%s/%s' % (
+      Common.NeatDirectory, self.getParameter('output'), channelName(set)
     )
 
     # Check for output directory
@@ -48,18 +48,18 @@ class TopovarLists(Processor):
       os.makedirs(outdir)
  
     # Set file name of the data sample
-    infile = '%s/%s_zero_Topo.root' % (
-        Common.SampleLocation, channelName(set, 'DATA')
+    infile = '%s/%s/%s.root' % (
+        Common.SampleLocation, Common.YieldSample, channelName(set, 'DATA')
     )
 
     # Set output file name 
-    outfile = '%s/%s.txt' % (
-        outdir, channelName(set)
+    outfile = '%s/%s' % (
+        outdir, Common.Selectvars
     )
 
     # Open data file and read the tree
     infile = TFile(infile)
-    tree = infile.Get('TopologicalVariables')
+    tree = infile.Get(Common.Inputtree)
 
     # Open a file to write the topvars
     outfile = open(outfile, 'w')
@@ -69,9 +69,9 @@ class TopovarLists(Processor):
       blacklisted = False
       for key in Common.TopovarBlackList:
         if branch.GetName().find(key) != -1:
-	  blacklisted = True
-	  break
-      if not blacklisted:	  
+            blacklisted = True
+            break
+      if not blacklisted:
         outfile.write('%s\n' % branch.GetName())
           
     

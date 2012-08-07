@@ -97,10 +97,8 @@ class Processor(object):
   ## Function call before starting looping
   def start(self):
     # Adding channel loops
-    self.addLoop('reco', Common.RecoVersions)
-    self.addLoop('lepton', Common.Leptons)
-    self.addLoop('ntag', Common.Ntags)
-    self.addLoop('njet', Common.Njets)
+    self.addLoop('runs', Common.Runs)
+    self.addLoop('channels', Common.Channels)
  
 
   ## Function call at the end of processing
