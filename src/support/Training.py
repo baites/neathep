@@ -1,4 +1,3 @@
-:q
 #! /usr/bin/env python
 # NeatTraining.py
 #
