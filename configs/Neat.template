@@ -12,6 +12,7 @@
 
 input_nodes = $input_nodes
 output_nodes = $output_nodes
+fully_connected = $fully_connected
 max_weight = $max_weight
 min_weight = $min_weight
 feedforward = $feedforward

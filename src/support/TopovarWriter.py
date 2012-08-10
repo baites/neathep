@@ -12,6 +12,7 @@ import array, copy, math, os, random, sys
 
 from ROOT import TFile, TTree
 
+import Common
 
 ## Dummy object hold an event
 class Event: pass
@@ -40,7 +41,7 @@ class TopovarWriter(object):
     # Clone a tree if a infile name is passed
     if infile:
       self.__infile = TFile(infile)
-      self.__intree = self.__infile.Get('TopologicalVariables')
+      self.__intree = self.__infile.Get(Common.Inputtree)
       self.__setActiveBranches()
       # Swiching to output file
       self.__outfile.cd()
@@ -48,7 +49,7 @@ class TopovarWriter(object):
     else:
       # Swiching to output file
       self.__outfile.cd()
-      self.__outtree = TTree('TopologicalVariables','TopologicalVariables')
+      self.__outtree = TTree(Common.Inputtree,Common.Inputtree)
 
 
   ## Destructor
@@ -89,8 +90,7 @@ class TopovarWriter(object):
       variables = self.__variables
     else:
       variables = copy.deepcopy(variables)
-      variables.insert(0,'EventNumber')
-      variables.insert(1,'EventWeight')
+      variables.insert(0,Common.EventWeight)
     # Check for the intree exist
     if not self.__intree:
       raise TopovarWriterError('No input tree exist.')
@@ -160,8 +160,7 @@ class TopovarWriter(object):
   def __setActiveBranches(self):
     # Set only selected variables
     if len(self.__variables) != 0:
-      self.__variables.insert(0, 'EventNumber')
-      self.__variables.insert(1, 'EventWeight')     
+      self.__variables.insert(0, Common.EventWeight)     
       self.__intree.SetBranchStatus('*', False)
       for variable in self.__variables:
         self.__intree.SetBranchStatus(variable, True)

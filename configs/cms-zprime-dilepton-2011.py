@@ -11,10 +11,12 @@ from Util import *
 
 # Channel configuration
 
-Runs = 'Run2011'
-Channels = ['EMU']
+Data = 'Run2011-'
+Prefixes = 'c'
+Channels = ['_emu_']
+Postfixes = 'Ntuple_histograms'
 
-Luminosity = {'Run2011':'5.0'}
+Luminosity = {'c':'5.0'}
 
 # Topovar back list
 
@@ -29,19 +31,19 @@ TopovarBlackList = [
 
 # Combined channel histograms
 
-# Plot labels
+# Plot labels for each channel
 
 Labels = {
-'EMU':'e#mu-channel'
+'_emu_':'e#mu-channel'
 }
 
 # Sample configuraton
 
-TrainingSignals = ['M750GeV_W7500MeV']
-TrainingBackgrounds = ['Background']
+TrainingSignals = ['Zprime_M750GeV_W7500MeV-']
+TrainingBackgrounds = ['bkg-']
 
-YieldSignals = ['M750GeV_W7500MeV']
-YieldBackgrounds = ['Background']
+YieldSignals = ['Zprime_M750GeV_W7500MeV']
+YieldBackgrounds = ['bkg']
 
 ColorCodes = {
 'Signal': ROOT.kBlue, 'Background': ROOT.kRed
@@ -54,6 +56,7 @@ Systematics = []
 # Input variables and topovar files
 
 Inputtree = 'Events'
+EventWeight = 'eventWeight'
 Inputvars = 'inputvars.txt'
 Selectvars = 'selectedvars.txt'
 SampleLocation = '/uscms/home/baites/nobackup/neathep/test'

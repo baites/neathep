@@ -13,6 +13,7 @@ import copy, math, os, random, sys
 from ROOT import TChain
 from ROOT import TFile
 
+import Common
 
 ## Dummy object hold an event
 class Event: pass
@@ -31,12 +32,11 @@ class TopovarReader(object):
 
   ## Constructor (a variable list needs to be provided)
   def __init__(self, variables = [], filename = None):
-    self.__chain = TChain('TopologicalVariables')
+    self.__chain = TChain(Common.Inputtree)
     # self.__chain.SetCacheSize()
     self.__filenames = []
     self.__variables = copy.copy(variables)
-    self.__variables.insert(0, 'EventNumber')
-    self.__variables.insert(1, 'EventWeight')
+    self.__variables.insert(0, Common.EventWeight)
     self.__setActiveBranches()
     self.__sumWeights = None
     if filename: self.add(filename)
@@ -127,8 +127,7 @@ class TopovarReader(object):
       if compress:
         event = event[2:]
       else:
-        delattr(event, 'EventNumber')
-        delattr(event, 'EventWeight')
+        delattr(event, Common.EventWeight)
       # Adding to the collection
       collection.append(event)
       counter = counter + 1

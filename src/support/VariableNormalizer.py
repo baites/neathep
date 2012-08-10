@@ -12,13 +12,14 @@
 import copy, math
 import pickle
 
+import Common
+
 class VariableNormalizer:
 
   ## Constructor
   def __init__(self, variables, aves=None, stds=None):
     self.__variables = copy.copy(variables)
-    self.__variables.insert(0, 'EventNumber')
-    self.__variables.insert(1, 'EventWeight')    
+    self.__variables.insert(0, Common.EventWeight)    
     self.reset(aves,stds)
 
   

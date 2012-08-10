@@ -49,7 +49,7 @@ class TopovarLists(Processor):
  
     # Set file name of the data sample
     infile = '%s/%s/%s.root' % (
-        Common.SampleLocation, Common.YieldSample, channelName(set, 'DATA')
+        Common.SampleLocation, Common.YieldSample, channelName(set, Common.Data)
     )
 
     # Set output file name 

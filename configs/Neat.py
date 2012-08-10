@@ -16,6 +16,7 @@ feedforward = 1
 nn_activation = 'sigmoid' 
 hidden_nodes = 0
 weight_stdev = 0.12
+fully_connected = 1
 
 # Genetic 
 

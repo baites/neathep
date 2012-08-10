@@ -55,8 +55,8 @@ def Evaluate(set):
 
   # Adding signal files
   for sample in Common.TrainingSignals:
-    signals.add('%s/%s/%s_zero_Topo_%s.root' % (
-        Common.SampleLocation, Common.TrainingSample, channelName(set, sample), Common.TrainingSample
+    signals.add('%s/%s/%s.root' % (
+        Common.SampleLocation, Common.TrainingSample, channelName(set, sample)
       )
     )
 
@@ -79,8 +79,8 @@ def Evaluate(set):
 
   # Adding background files
   for sample in Common.TrainingBackgrounds:
-    backgrounds.add('%s/%s/%s_zero_Topo_%s.root' % (
-        Common.SampleLocation, Common.TrainingSample, channelName(set, sample), Common.TrainingSample
+    backgrounds.add('%s/%s/%s.root' % (
+        Common.SampleLocation, Common.TrainingSample, channelName(set, sample)
       )
     )
 

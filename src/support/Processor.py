@@ -96,10 +96,10 @@ class Processor(object):
 
   ## Function call before starting looping
   def start(self):
-    # Adding channel loops
-    self.addLoop('runs', Common.Runs)
-    self.addLoop('channels', Common.Channels)
- 
+    # Adding process loops
+    self.addLoop('prefix', Common.Prefixes)
+    self.addLoop('channel', Common.Channels)
+    self.addLoop('postfix', Common.Postfixes) 
 
   ## Function call at the end of processing
   def end(self):

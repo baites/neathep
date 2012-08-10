@@ -56,8 +56,8 @@ class EventEuclideanDistance(FitnessFunction):
       # Loop over the events
       for event in signalSample:
         # Extract variables and weight
-        variables = event[2:]
-        weight = event[1]/signalYield
+        variables = event[1:]
+        weight = event[0]/signalYield
         # Not strictly necessary in feedforward nets
         net.flush()
         # Computing the error
@@ -66,8 +66,8 @@ class EventEuclideanDistance(FitnessFunction):
       # Loop over the events
       for event in backgroundSample:
         # Extract variables and weight
-        variables = event[2:]
-        weight = event[1]/backgroundYield
+        variables = event[1:]
+        weight = event[0]/backgroundYield
         # Not strictly necessary in feedforward nets
         net.flush()
         # Computing the error
@@ -112,8 +112,8 @@ class SchwienhorstEllerMetric(FitnessFunction):
       # Loop over the events creating signal histogram
       for event in signalSample:
         # Extract variables and weight
-        variables = event[2:]
-        weight = event[1]
+        variables = event[1:]
+        weight = event[0]
         # Not strictly necessary in feedforward nets
         net.flush()
         # Net output
@@ -124,8 +124,8 @@ class SchwienhorstEllerMetric(FitnessFunction):
       # Loop over the events creating background histogram
       for event in backgroundSample:
         # Extract variables and weight
-        variables = event[2:]
-        weight = event[1]
+        variables = event[1:]
+        weight = event[0]
         # Not strictly necessary in feedforward nets
         net.flush()
         # Net output
@@ -184,8 +184,8 @@ class ZScore(FitnessFunction):
       # Loop over the events creating signal histogram
       for event in signalSample:
         # Extract variables and weight
-        variables = event[2:]
-        weight = event[1]
+        variables = event[1:]
+        weight = event[0]
         # Not strictly necessary in feedforward nets
         net.flush()
         # Net output
@@ -199,8 +199,8 @@ class ZScore(FitnessFunction):
       # Loop over the events creating background histogram
       for event in backgroundSample:
         # Extract variables and weight
-        variables = event[2:]
-        weight = event[1]
+        variables = event[1:]
+        weight = event[0]
         # Not strictly necessary in feedforward nets
         net.flush()
         # Net output
