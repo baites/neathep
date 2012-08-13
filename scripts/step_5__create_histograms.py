@@ -35,15 +35,17 @@ class HistogramProducer(Processor):
     self.defineParameter('xcheck','Name for creating xcheck sample trees.')    
     self.defineParameter('sample','Sample use to produce the histograms (default=yield).')
 
+
   # Redefining start
   def start(self):
+    print Common.Systematics
     # Redefinition of the channels
     if self.isParameter('xcheck'):
       # Redefining tag channels
       Common.Ntags = getattr(Common.XCheckNtags, self.getParameter('xcheck'))
       Common.Njets = getattr(Common.XCheckNjets, self.getParameter('xcheck'))
       Common.Systematics = []
-    elif self.getParameter('testing','yeild') != 'yield':
+    elif self.getParameter('sample','yield') != 'yield':
       # Look for systematics only for yield sample 
       Common.Systematics = []
     # Running processor start
@@ -110,7 +112,7 @@ class HistogramProducer(Processor):
     else:
       samples = Common.YieldBackgrounds + [Common.YieldSignals]
     samples = samples + [Common.Data] 
- 
+
     # Loop over all the samples with trees
     for systematic in Common.Systematics + ['']:
       for sample in samples:
@@ -119,7 +121,7 @@ class HistogramProducer(Processor):
         if (sample in Common.NoSystematics) and systematic != '': continue
 
         # No systematics in case of xchecks
-        if self.isParameter('xcheck') and systematic != 'zero': continue
+        if self.isParameter('xcheck') and systematic != '': continue
 
         self.message('Processing systematic %s samples %s.' % (systematic, sample))
 
