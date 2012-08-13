@@ -83,8 +83,8 @@ RuleFitTrainingEvents = 20000
 # Analysis dependent neat parameters
 
 import FitnessFunctions
-NeatNumberGenerations = 10 
-NeatNumberTries = 4
+NeatNumberGenerations = 40 
+NeatNumberTries = 10
 NeatFitnessFunction = FitnessFunctions.EventEuclideanDistance()
 
 # Discriminator information
