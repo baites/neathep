@@ -15,6 +15,7 @@ sys.argv.append('-b')
 
 import commands, shutil
 
+import Common
 from Processor import *
 from Util import *
 
@@ -35,12 +36,11 @@ class TopovarLists(Processor):
   ## Process each channel
   def process(self, set):
 
-    channel = channelName(set)    
-    self.message('Processing channel %s' % channel)
+    self.message('Processing channel %s' % set['channel'])
 
     # Creating output directory
-    outdir = '%s/scratch/%s/%s' % (
-      Common.NeatDirectory, self.getParameter('output'), channelName(set)
+    outdir = '%s/scratch/%s/Topovars/%s' % (
+      Common.NeatDirectory, self.getParameter('output'), set['channel'] 
     )
 
     # Check for output directory
@@ -49,7 +49,7 @@ class TopovarLists(Processor):
  
     # Set file name of the data sample
     infile = '%s/%s/%s.root' % (
-        Common.SampleLocation, Common.YieldSample, channelName(set, Common.Data)
+        Common.SampleLocation, Common.YieldSample, Common.filename(set, Common.Data)
     )
 
     # Set output file name 

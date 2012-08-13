@@ -37,11 +37,8 @@ class WriteWinner(Processor):
   ## Process each channel
   def process(self, set, lock=None):
 
-    # Check the channel and update the counter
-    channel = channelName(set)
-
     # Print channel being processed
-    self.message('Processing channel %s.' % channel)
+    self.message('Processing channel %s.' % set['channel'])
     
     # Placeholder for winner
     winner = None
@@ -53,12 +50,12 @@ class WriteWinner(Processor):
 
       # Setting the indir directory
       indir = '%s/scratch/%s/Trainings/%s/Training%05d' % (
-        Common.NeatDirectory, self.getParameter('input'), channel, counter
+        Common.NeatDirectory, self.getParameter('input'), set['channel'], counter
       )
 
       # Creating output directory
       outdir = '%s/scratch/%s/Trainings/%s' % (
-        Common.NeatDirectory, self.getParameter('input'), channel
+        Common.NeatDirectory, self.getParameter('input'), set['channel']
       )
 
       # Look for missing files  
@@ -80,11 +77,11 @@ class WriteWinner(Processor):
 
         # Adding training files
         for sample in Common.TrainingBackgrounds + Common.TrainingSignals:
-          training.add('%s/%s/%s_zero_Topo_%s.root' % (
-              Common.SampleLocation, Common.TrainingSample, channelName(set, sample), Common.TrainingSample
+          training.add('%s/%s/%s.root' % (
+              Common.SampleLocation, Common.TrainingSample, filename(set, sample)
             )
           )
-  
+
         normalizer = VariableNormalizer(variables)
         normalizer.add(training.sample(True))
         normalizer.report()
@@ -110,7 +107,7 @@ class WriteWinner(Processor):
 
       if not winner or candidate['fitness'] > winner['fitness']:
         self.message('Winner candidate for channel %s found in training %s with fitness %.4g' % (
-            channel, candidate['training'], candidate['fitness']
+            set['channel'], candidate['training'], candidate['fitness']
           )
         )
         winner = candidate

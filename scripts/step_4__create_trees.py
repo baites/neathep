@@ -58,18 +58,16 @@ class TreeProducer(Processor):
   # Process each channel
   def process(self, set):
 
-    channel = channelName(set)
-
-    self.message('Processing channel %s' % channel)
+    self.message('Processing channel %s' % set['channel'])
 
     # Setting the indir directory
     indir = '%s/scratch/%s/Trainings/%s' % (
-      Common.NeatDirectory, self.getParameter('input'), channel
+      Common.NeatDirectory, self.getParameter('input'), set['channel']
     )
 
     # Setting channel dir
     chdir = '%s/Trainings/%s' % (
-      self.getParameter('input'), channel
+      self.getParameter('input'), set['channel']
     )
      
     # Setting the outdir directory
@@ -100,68 +98,69 @@ class TreeProducer(Processor):
       os.makedirs(outdir)
    
     # Loop over all the samples producing the trees
-    for systematic in Common.Systematics + ['zero']:
-      for sample in Common.YieldBackgrounds + Common.YieldSignals + ['DATA']:
+    for systematic in Common.Systematics + ['']:
+      for sample in Common.YieldBackgrounds + Common.YieldSignals + [Common.Data]:
 
         # No systematics for QCD and DATA
-        if (sample == 'DATA' or sample == 'QCD') and systematic != 'zero': continue
+        if (sample in Common.NoSystematics) and systematic != '': continue
 
         self.message('Processing systematic %s sample %s.' % (systematic, sample))
 
-        infile = '%s/%s/%s_%s_Topo_%s.root' % (
-          Common.SampleLocation, Common.YieldSample, channelName(set, sample), systematic, Common.YieldSample
+        infile = '%s/%s/%s.root' % (
+          Common.SampleLocation, Common.YieldSample, Common.filename(set, sample, systematic)
         )        
 
         if sampletype == 'training':
-          infile = '%s/%s/%s_%s_Topo_%s.root' % (
-            Common.SampleLocation, Common.TrainingSample, channelName(set, sample), systematic, Common.TrainingSample
+          infile = '%s/%s/%s.root' % (
+            Common.SampleLocation, Common.TrainingSample, Common.filename(set, sample, systematic)
           )
         elif sampletype == 'testing':
-          infile = '%s/%s/%s_%s_Topo_%s.root' % (
-            Common.SampleLocation, Common.TestingSample, channelName(set, sample), systematic, Common.TestingSample
+          infile = '%s/%s/%s.root' % (
+            Common.SampleLocation, Common.TestingSample, Common.filename(set, sample, systematic)
           )
           
         if self.isParameter('xcheck'):
-          infile = '%s/crosscheck_sample/%s/%s_%s_Topo.root' % (
-            Common.SampleLocation, self.getParameter('xcheck'), channelName(set, sample), systematic
+          infile = '%s/crosscheck_sample/%s/%s.root' % (
+            Common.SampleLocation, self.getParameter('xcheck'), Common.filename(set, sample, systematic)
           )
 
         # Check if the file already exist
         if not os.path.isfile(infile):
           self.message('Tree file %s already exist skipping ...' % infile)
           continue
-        
-        outfile = '%s/%s_%s.root' % (
-          outdir, channelName(set, sample), systematic
+
+        outfile = '%s/%s.root' % (
+          outdir, Common.filename(set, sample, systematic)
         )        
 
-        logfile = '%s/%s_%s.log' % (
-          outdir, channelName(set, sample), systematic
+        logfile = '%s/%s.log' % (
+          outdir, Common.filename(set, sample, systematic)
         )        
                   
         # Executing the tree production
-        command = '%s/support/python/TopovarProducer.py --combinations=%s:%s --input=%s --output=%s >& %s' % (
+        command = '%s/src/support/TopovarProducer.py --combinations=%s:%s --input=%s --output=%s >& %s' % (
           Common.NeatDirectory, Common.NeatOutputName, chdir, infile, outfile, logfile
         )
+        print command
         os.system(command)
                   
     ## Merge signal samples 
 
     # Check if there is anything to merge
-    if type(Common.YieldSignals) == list and len(Common.YieldSignals) > 1:
+    if type(Common.YieldSignals) == list and len(Common.YieldSignals) > 1 and Common.MergeSignals == True:
       # Loop over all the systematics
-      for systematic in Common.Systematics + ['zero']:
+      for systematic in Common.Systematics + ['']:
         files = ''
         for signal in YieldSignals:
-          file = '%s/%s_%s.root' % (outdir, channelName(set, signal), systematic)
+          file = '%s/%s.root' % (outdir, Common.filename(set, signal, systematic))
           if os.path.isfile(file):
             files = files + ' ' + file
         if len(files.split(' ')) < 3:
           self.message('No signal files to be merged for systematic %s ...' % systematic)
           continue 
         sample = ''.join(YieldSignals)
-        merge = '%s/%s_%s.root' % (outdir, channelName(set, sample), systematic)
-        log = '%s/%s_%s.log' % (outdir, channelName(set, sample), systematic)
+        merge = '%s/%s.root' % (outdir, Common.filename(set, sample, systematic))
+        log = '%s/%s.log' % (outdir, Common.filename(set, sample, systematic))
         if not os.path.isfile(merge):
           self.message('Merging tree file %s' % merge)
           command = 'hadd %s%s >& %s' % (merge, files, log)

@@ -32,14 +32,14 @@ class VariableNormalizer:
 
   ## Report the variable average and std
   def report(self):
-    for variable in self.__variables[2:]:
+    for variable in self.__variables[1:]:
       ave, std = self(variable)
       self.__message('Variable %s: %0.2f +- %0.2f' % (variable, ave, std))
 
 
   ## Normalize an event
   def normalize(self, event):
-    for i in xrange(2,len(self.__variables)):
+    for i in xrange(1,len(self.__variables)):
       ave, std = self(self.__variables[i])
       event[i] = (event[i] - ave)/std
                 
@@ -61,7 +61,7 @@ class VariableNormalizer:
     assert stds != None
     self.__average = aves
     self.__sqaverage = {}
-    for variable in self.__variables[2:]:
+    for variable in self.__variables[1:]:
       self.__sqaverage[variable] = aves[variable]**2 + stds[variable]**2
 
 
@@ -92,13 +92,13 @@ class VariableNormalizer:
     # Computing weighted average iteractevily
     for event in sample:
       if not OldW:
-        W = event[1]
-        for i in xrange(2, len(self.__variables)):
+        W = event[0]
+        for i in xrange(1, len(self.__variables)):
           A[variables[i]] = event[i]
           B[variables[i]] = event[i]**2  
       else:
-        weight = event[1]
-        for i in xrange(2, len(self.__variables)):
+        weight = event[0]
+        for i in xrange(1, len(self.__variables)):
           value = event[i]
           A[variables[i]] = (OldW*OldA[variables[i]] + weight*value)/(OldW+weight) 
           B[variables[i]] = (OldW*OldB[variables[i]] + weight*value**2)/(OldW+weight)

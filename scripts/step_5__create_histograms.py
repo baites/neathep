@@ -34,7 +34,6 @@ class HistogramProducer(Processor):
     self.defineParameter('input','Provides the input directory with a neat tree directory.')
     self.defineParameter('xcheck','Name for creating xcheck sample trees.')    
     self.defineParameter('sample','Sample use to produce the histograms (default=yield).')
-    self.defineParameter('rebin','Activates the bin transformation providing a working area with top_cafe installed.')
 
   # Redefining start
   def start(self):
@@ -50,31 +49,11 @@ class HistogramProducer(Processor):
     # Running processor start
     super(HistogramProducer, self).start()
 
-  
-  ## Execute the bin transformation
-  def rebinning(self, set):
-    self.message('Running bin transformations for %s.' % channelName(set))
-    # Variable to be rebin 
-    file = open ('%s/BinTransformationDiscriminant.txt' % set['outdir'], 'w')
-    file.write('EventWeight\n%s\n' % Common.NeatOutputName)
-    file.close()
-    # From a wrapper create the set of instructions  
-    file = open ('%s/support/wrappers/RunBinTransformation.wrapper' % Common.NeatDirectory)
-    template = string.Template(file.read())
-    file.close()
-    script = '%s/RunBinTransformation-%s.sh' % (set['outdir'], set['channel'])
-    file = open(script, 'w')
-    file.write(template.safe_substitute(set))
-    file.close()
-    os.system('csh %s' % script)
-        
           
   ## Process each channel
   def process(self, set):
 
-    channel = channelName(set)
-
-    self.message('Processing channel %s' % channel)
+    self.message('Processing channel %s' % set['channel'])
 
     # Setting the indir directory
     indir = '%s/scratch/%s/YieldTrees' % (
@@ -121,30 +100,6 @@ class HistogramProducer(Processor):
 
     # File mode for writting histograms
     mode = 'recreate'
-
-    # Runs the bin transformation (defined in top_cafe)
-    if self.isParameter('rebin'):
-      # Adding the indir to the set
-      set['indir'] = indir
-      # Adding the indir to the set
-      set['outdir'] = outdir
-      # Adding signal information to the set
-      set['signals'] = ''.join(Common.YieldSignals)
-      # Adding rebing parameter
-      set['topcafe'] = self.getParameter('rebin')
-      # Adding the channel name
-      set['channel'] = channelName(set)
-      # Adding the neat directory
-      set['neatdir'] = Common.NeatDirectory
-      # Set the systematic flag if needed
-      if self.isParameter('xcheck') or self.getParameter('sample','yield') != 'yield':
-        set['sysflag'] = '--no-sys'
-      else:
-        set['sysflag'] = ''
-      # Running the rebinning
-      self.rebinning(set)
-      # Switching move update for adding unbinned histograms
-      mode = 'update'
  
     # Create the list of sample
     samples = None
@@ -154,22 +109,22 @@ class HistogramProducer(Processor):
         samples = samples + [''.join(Common.YieldSignals)]
     else:
       samples = Common.YieldBackgrounds + [Common.YieldSignals]
-    samples = samples + ['DATA']
+    samples = samples + [Common.Data] 
  
     # Loop over all the samples with trees
-    for systematic in Common.Systematics + ['zero']:
+    for systematic in Common.Systematics + ['']:
       for sample in samples:
 
         # No systematics for QCD and DATA
-        if (sample == 'DATA' or sample == 'QCD') and systematic != 'zero': continue
-        
+        if (sample in Common.NoSystematics) and systematic != '': continue
+
         # No systematics in case of xchecks
         if self.isParameter('xcheck') and systematic != 'zero': continue
 
         self.message('Processing systematic %s samples %s.' % (systematic, sample))
 
-        infile = '%s/%s_%s.root' % (
-          indir, channelName(set, sample), systematic
+        infile = '%s/%s.root' % (
+          indir, Common.filename(set, sample, systematic)
         )        
 
         # Check in the input file exist
@@ -180,8 +135,8 @@ class HistogramProducer(Processor):
         # Create a topovar reader only for neat output
         topovars = TopovarReader([Common.NeatOutputName], infile)
 
-        outfile = '%s/%s_%s.root' % (
-          outdir, channelName(set, sample), systematic
+        outfile = '%s/%s.root' % (
+          outdir, Common.filename(set, sample, systematic)
         )        
         
         # Create a histogram producer
@@ -200,7 +155,7 @@ class HistogramProducer(Processor):
           # Read one event
           event = topovars.read(entry)
           # Fill the histogram
-          histograms.fill(getattr(event,Common.NeatOutputName), event.EventWeight)
+          histograms.fill(getattr(event,Common.NeatOutputName), getattr(event,Common.EventWeight))
         
 
 # Execute

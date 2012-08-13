@@ -60,23 +60,16 @@ class NeatTrainer(Processor):
   ## Process each channel
   def process(self, set):
 
-    # Check the channel and update the counter
-    channel = channelName(set)
-    if channel not in self.__counter:
-      self.__counter[channel] = 1
-    else:
-      self.__counter[channel] = self.__counter[channel] + 1
-
-    self.message('Processing channel %s training %d' % (channel, self.__counter[channel]))
+    self.message('Processing channel %s training %d' % (set['channel'], set['try']))
 
     # Setting the indir directory
     indir = '%s/scratch/%s/%s' % (
-      Common.NeatDirectory, self.getParameter('input'), channel
+      Common.NeatDirectory, self.getParameter('input'), set['channel']
     )
 
     # Creating output directory
     outdir = '%s/scratch/%s/Trainings/%s/Training%05d' % (
-      Common.NeatDirectory, self.getParameter('output'), channel, self.__counter[channel]
+      Common.NeatDirectory, self.getParameter('output'), set['channel'], set['try']
     )
 
     # Check for output directory

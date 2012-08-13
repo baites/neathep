@@ -25,28 +25,6 @@ class UtilError(Exception):
     return self.value
 
 
-## Funtion for formated file name
-def channelName(set, sample=''):
-  name = ''
-
-  if 'prefix' in set:
-    name = set['prefix']
-  
-  if 'channel' in set:
-    if name == '': name = set['channel']
-    else: name = name + '%s' % set['channel']
-
-  if sample != '':
-    if name == '': name = sample
-    else: name = name + '%s' % sample  
-
-  if 'postfix' in set:
-    if name == '': name = set['postfix']
-    else: name = name + '%s' % set['postfix']
-
-  return name
-
-
 # Auxiliary function for reading tmva output
 def searchInFile(file, key):
   string = file.readline()

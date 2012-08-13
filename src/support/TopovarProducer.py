@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
   # Loop over the tree adding the neat output        
   for entry in xrange(topovars.getInTreeEntries()):
-    if entry % 10 == 0 and entry != 0:
+    if entry % 1000 == 0 and entry != 0:
       message('Reading %d events.' % entry)
     # Collection of neat discriminator
     neats = {}
@@ -115,7 +115,7 @@ if __name__ == "__main__":
       normalizers[key].normalize(event)
       # Not strictly necessary in feedforward nets
       nets[key].flush()
-      neats[key] = nets[key].sactivate(event[2:])[0]
+      neats[key] = nets[key].sactivate(event[1:])[0]
     # Add to the tree
     topovars.fill(neats)
   # Write the events into the file

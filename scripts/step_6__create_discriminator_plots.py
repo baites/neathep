@@ -95,84 +95,15 @@ class PlotProducer(Processor):
         Common.NeatDirectory, self.getParameter('input'), self.getParameter('xcheck')
       )      
     title = 'Combined NEAT output plots for %s' % self.getParameter('input')
-    WebpageWriter(title, type='discriminators').write('%s/discriminator-plots.html' % outdir)
-    if not self.isParameter('xcheck'):
-      WebpageWriter(title, type='profiles').write('%s/profile-plots.html' % outdir)
+    #WebpageWriter(title, type='discriminators').write('%s/discriminator-plots.html' % outdir)
+    #if not self.isParameter('xcheck'):
+    #  WebpageWriter(title, type='profiles').write('%s/profile-plots.html' % outdir)
     
-
-  ## Merger the channel in macro channels
-  def merge(self, sample, set, indir):
-
-    # Collecting merging combination
-    
-    loopset = {}
-    
-    values = [ set['reco'] ]
-    if hasattr(Common, 'CombinedRecoVersions') and set['reco'] in Common.CombinedRecoVersions:
-      values = Common.RecoVersions[:-1]
-    loopset = combinedSets(loopset, { 'reco': values })
-    
-    values = [ set['lepton'] ]
-    if hasattr(Common, 'CombinedLeptons') and set['lepton'] in Common.CombinedLeptons:
-      values = Common.Leptons[:-1]
-    loopset = combinedSets(loopset, { 'lepton': values })
-
-    values = [ set['ntag'] ]
-    if hasattr(Common, 'CombinedNtags') and set['ntag'] in Common.CombinedNtags:
-      values = Common.Ntags[:-1]
-    loopset = combinedSets(loopset, { 'ntag': values })
-
-    values = [ set['njet'] ]
-    if hasattr(Common, 'CombinedNjets') and set['njet'] in Common.CombinedNjets:
-      values = Common.Njets[:-1]
-    loopset = combinedSets(loopset, { 'njet': values })
-
-    # Check for merging
-
-    if len(loopset) == 1: return
-
-    # List of files to merge
-  
-    files = ''                  
-    for loop in loopset:
-      file = '%s/%s_zero.root' % (indir, channelName(loop, sample))      
-      files = files + ' ' + file
-     
-    # Merging the files
-  
-    merge = '%s/%s_zero.root' % (indir, channelName(set, sample))
-    log = '%s/%s_zero.log' % (indir, channelName(set, sample))      
-
-    if not os.path.isfile(merge):
-      self.message('Merging in histogram files %s' % channelName(set, sample))
-      command = 'hadd %s%s >& %s' % (merge, files, log)
-      os.system(command)
-
-
-  ## Merge signal samples 
-  def mergeSignals(self, set, indir):
-    # Check if there is anything to merge
-    if type(Common.YieldSignals) == list and len(Common.YieldSignals) > 1:
-      # Loop over all the systematics
-      for systematic in Common.Systematics + ['zero']:
-        files = ''
-        for signal in YieldSignals:
-          file = '%s/%s_%s.root' % (indir, channelName(set, signal), systematic)
-          files = files + ' ' + file
-        sample = ''.join(YieldSignals)
-        merge = '%s/%s_%s.root' % (indir, channelName(set, sample), systematic)
-        log = '%s/%s_%s.log' % (indir, channelName(set, sample), systematic)      
-        if not os.path.isfile(merge):
-          self.message('Merging in histogram files %s_%s' % (channelName(set, sample),systematic))
-          command = 'hadd %s%s >& %s' % (merge, files, log)
-          os.system(command)
-        
 
   ## Process each channel
   def process(self, set):
 
-    channel = channelName(set)
-    self.message('Processing channel %s' % channel)
+    self.message('Processing channel %s' % set['channel'])
 
     # Setting the indir directory
     indir = '%s/scratch/%s/YieldHistograms' % (
@@ -202,7 +133,7 @@ class PlotProducer(Processor):
       samples = Common.YieldBackgrounds + Common.YieldSignals
     else:
       samples = Common.YieldBackgrounds + [Common.YieldSignals]
-    samples = samples + ['DATA']
+    samples = samples + [Common.Data]
 
     # Set canvas
     canvas = TCanvas("canvas", "Data/MC for NEAT discriminator.",1000,800)
@@ -216,7 +147,7 @@ class PlotProducer(Processor):
     for bin in Common.Binning:
       # Histogram holder
       histograms = {}
-      stack = THStack('stack','%s' % channel)
+      stack = THStack('stack','%s' % set['channel'])
       # Legend
       leg = TLegend(1.0,0.6,0.6,1.0)
       leg.SetNColumns(2)
@@ -224,10 +155,10 @@ class PlotProducer(Processor):
       # Loop over signal+backgorund files
       for sample in samples:
         # Merge to create the combined channels
-        self.merge(sample, set, indir)
+        # self.merge(sample, set, indir)
         # Input file with histograms
-        infile = '%s/%s_zero.root' % (
-          indir, channelName(set, sample)
+        infile = '%s/%s.root' % (
+          indir, Common.filename(set, sample)
         )
         print 'Processing sample:', infile   
         # Open the file with histograms 
@@ -250,7 +181,7 @@ class PlotProducer(Processor):
             histograms['backgrounds'].Add(histogram)         
 
         # Do not add data to the stack
-        if sample != 'DATA':
+        if sample != Common.Data:
           histogram.SetLineColor(Common.ColorCodes[sample])
           histogram.SetFillColor(Common.ColorCodes[sample])
           histograms[sample] = histogram.Clone()
@@ -266,7 +197,7 @@ class PlotProducer(Processor):
       # Stack axes only exist after drawing
       stack.Draw('hist')
       # Compute user range
-      maxdata = histograms['DATA'].GetMaximum() + histograms['DATA'].GetBinError(histograms['DATA'].GetMaximumBin())
+      maxdata = histograms[Common.Data].GetMaximum() + histograms[Common.Data].GetBinError(histograms[Common.Data].GetMaximumBin())
       maxcount = max(stack.GetMaximum(), maxdata)
       signalName = ''
       # Signal name
@@ -274,19 +205,19 @@ class PlotProducer(Processor):
         signalName = ''.join(Common.YieldSignals)      
       else:
         signalName = Common.YieldSignals
-      histograms['DATA'].GetXaxis().SetTitle('%s NEAT output' % signalName)
-      histograms['DATA'].GetYaxis().SetTitle('Event Yield')
-      histograms['DATA'].GetYaxis().SetTitleOffset(1.2)
-      histograms['DATA'].GetYaxis().SetRangeUser(0, 1.1*maxcount)
-      histograms['DATA'].SetMarkerSize(3) 
-      if histograms['DATA'].GetNbinsX() >= 50:
-        histograms['DATA'].SetMarkerSize(2)
-      histograms['DATA'].SetLineWidth(3)
-      histograms['DATA'].SetMarkerStyle(8)
-      histograms['DATA'].Draw('e1')
+      histograms[Common.Data].GetXaxis().SetTitle('%s NEAT output' % signalName)
+      histograms[Common.Data].GetYaxis().SetTitle('Event Yield')
+      histograms[Common.Data].GetYaxis().SetTitleOffset(1.2)
+      histograms[Common.Data].GetYaxis().SetRangeUser(0, 1.1*maxcount)
+      histograms[Common.Data].SetMarkerSize(3) 
+      if histograms[Common.Data].GetNbinsX() >= 50:
+        histograms[Common.Data].SetMarkerSize(2)
+      histograms[Common.Data].SetLineWidth(3)
+      histograms[Common.Data].SetMarkerStyle(8)
+      histograms[Common.Data].Draw('e1')
       stack.Draw('samehist')
       # Draw data point
-      histograms['DATA'].Draw('e1,same')
+      histograms[Common.Data].Draw('e1,same')
       # Draw legend
       if self.getParameter('discriminator-legends', 'false') == 'true': leg.Draw()
       # Draw text
@@ -295,17 +226,15 @@ class PlotProducer(Processor):
       text.SetTextAlign(32)
       text.SetNDC()
       text.SetTextSize(0.050)
-      text.DrawLatex(0.94, 0.94-0*0.05, 'D0 Run II, %s fb^{-1}' % Common.Luminosity[set['reco']]);
+      text.DrawLatex(0.94, 0.94-0*0.05, 'CMS %s fb^{-1}' % Common.Luminosity[set['channel']]);
       text.SetTextColor(13)      
-      text.DrawLatex(0.94, 0.94-1*0.05, '%s' % Common.Labels[set['lepton']] ) 
-      text.DrawLatex(0.94, 0.94-2*0.05, '%s' % Common.Labels[set['ntag']])
-      text.DrawLatex(0.94, 0.94-3*0.05, '%s' % Common.Labels[set['njet']])
+      text.DrawLatex(0.94, 0.94-1*0.05, '%s' % Common.Labels[set['channel']] ) 
 
       # Update canvas
       canvas.Update()
       # Save the canvas
       outfile = '%s/%s_%s' % (
-          outdir, channelName(set), bin
+          outdir, Common.filename(set), bin
       )
       canvas.SaveAs('%s.eps' % outfile)
       canvas.SaveAs('%s.png' % outfile)
@@ -352,7 +281,7 @@ class PlotProducer(Processor):
       if self.getParameter('profile-legends', 'true') == 'true': leg2.Draw()   
       # Save the canvas
       outfile = '%s/profiles_%s_%s' % (
-          outdir, channelName(set), bin
+          outdir, set['channel'], bin
       )
       canvas.SaveAs('%s.eps' % outfile)
       canvas.SaveAs('%s.png' % outfile)
